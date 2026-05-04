@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <link rel="icon" type="image/png" href="Goal Todo.png">
-    <title>Goal Todo </title>
+    <title>Goal Todo with History</title>
     <style>
         * {
             margin: 0;
@@ -54,7 +54,6 @@
             justify-content: center;
         }
 
-        /* main card */
         .todo-card {
             max-width: 800px;
             width: 100%;
@@ -63,7 +62,6 @@
             border-radius: var(--radius-card);
             box-shadow: var(--shadow-md);
             overflow: hidden;
-            backdrop-filter: blur(0px);
             transition: all 0.3s;
         }
 
@@ -115,7 +113,6 @@
             color: white;
         }
 
-        /* input area */
         .input-area {
             padding: 1.5rem 2rem 0.8rem 2rem;
         }
@@ -183,7 +180,6 @@
             color: var(--text-primary);
         }
 
-        /* stats & filters */
         .stats-filters {
             padding: 0.5rem 2rem 1rem 2rem;
             display: flex;
@@ -231,7 +227,6 @@
             color: var(--text-primary);
         }
 
-        /* task list */
         .task-list-container {
             padding: 0.5rem 2rem 2rem 2rem;
         }
@@ -362,11 +357,112 @@
             color: var(--text-secondary);
         }
 
+        .history-btn {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .history-btn:hover {
+            background: var(--accent);
+            color: white;
+        }
+
         .empty-message {
             text-align: center;
             padding: 2rem;
             color: var(--text-secondary);
             font-weight: 500;
+        }
+
+        /* Modal styles for history */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(3px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-container {
+            background: var(--card-bg);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            border-radius: 32px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+        .modal-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            line-height: 1;
+        }
+        .history-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .history-item {
+            background: var(--border-light);
+            padding: 10px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            border-left: 4px solid var(--accent);
+        }
+        .history-time {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+        .history-action {
+            font-weight: 600;
+        }
+        .modal-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--border-light);
+            display: flex;
+            justify-content: flex-end;
+        }
+        .clear-history-btn {
+            background: transparent;
+            border: 1px solid var(--danger);
+            padding: 6px 16px;
+            border-radius: 30px;
+            color: var(--danger);
+            cursor: pointer;
         }
 
         @media (max-width: 580px) {
@@ -435,8 +531,25 @@
     </div>
 
     <div class="footer-actions">
+        <button id="historyBtn" class="clear-btn history-btn">📜 History</button>
         <button id="clearCompletedBtn" class="clear-btn">🗑️ Clear completed</button>
         <button id="clearAllBtn" class="clear-btn clear-all-btn">⚠️ Delete all tasks</button>
+    </div>
+</div>
+
+<!-- History Modal -->
+<div id="historyModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h3>📜 Task History</h3>
+            <button class="modal-close" id="closeHistoryModal">&times;</button>
+        </div>
+        <ul id="historyList" class="history-list">
+            <li class="empty-message">No history yet.</li>
+        </ul>
+        <div class="modal-footer">
+            <button id="clearHistoryBtn" class="clear-history-btn">Clear all history</button>
+        </div>
     </div>
 </div>
 
@@ -444,8 +557,9 @@
     // ----- STORAGE & GLOBAL STATE -----
     let tasks = [];          // each task: { id, text, completed }
     let currentFilter = "all";
-    let editModeId = null;   // if editing, store task id
+    let editModeId = null;
     let nextId = 1;
+    let history = [];        // array of history entries
 
     // DOM elements
     const taskInput = document.getElementById("taskInput");
@@ -457,32 +571,104 @@
     const clearCompletedBtn = document.getElementById("clearCompletedBtn");
     const clearAllBtn = document.getElementById("clearAllBtn");
     const darkModeToggle = document.getElementById("darkModeToggle");
+    const historyBtn = document.getElementById("historyBtn");
+    const historyModal = document.getElementById("historyModal");
+    const closeHistoryModal = document.getElementById("closeHistoryModal");
+    const historyListEl = document.getElementById("historyList");
+    const clearHistoryBtn = document.getElementById("clearHistoryBtn");
 
-    // ----- Helper: Save to localStorage -----
+    // ----- History Helpers -----
+    function saveHistoryToLocalStorage() {
+        localStorage.setItem("flowTodo_history", JSON.stringify(history.slice(-150))); // keep last 150
+    }
+
+    function loadHistoryFromLocalStorage() {
+        const storedHistory = localStorage.getItem("flowTodo_history");
+        if (storedHistory) {
+            history = JSON.parse(storedHistory);
+        } else {
+            history = [];
+        }
+    }
+
+    function pushToHistory(action, details) {
+        const entry = {
+            id: Date.now() + Math.random(),
+            timestamp: new Date().toLocaleString(),
+            action: action,
+            details: details
+        };
+        history.unshift(entry); // newest first
+        if (history.length > 150) history.pop();
+        saveHistoryToLocalStorage();
+        renderHistoryModal();   // update modal if open
+    }
+
+    // render history inside modal
+    function renderHistoryModal() {
+        if (!historyListEl) return;
+        historyListEl.innerHTML = "";
+        if (history.length === 0) {
+            const emptyLi = document.createElement("li");
+            emptyLi.className = "empty-message";
+            emptyLi.innerText = "No actions recorded yet.";
+            historyListEl.appendChild(emptyLi);
+            return;
+        }
+        history.forEach(entry => {
+            const li = document.createElement("li");
+            li.className = "history-item";
+            li.innerHTML = `
+                <div class="history-time">${entry.timestamp}</div>
+                <div class="history-action">${entry.action}</div>
+                <div>${entry.details}</div>
+            `;
+            historyListEl.appendChild(li);
+        });
+    }
+
+    // Show/hide modal
+    function showHistoryModal() {
+        renderHistoryModal();
+        historyModal.classList.add("active");
+    }
+    function hideHistoryModal() {
+        historyModal.classList.remove("active");
+    }
+    function clearHistory() {
+        if (confirm("Delete all history entries? This won't affect your tasks.")) {
+            history = [];
+            saveHistoryToLocalStorage();
+            renderHistoryModal();
+        }
+    }
+
+    // ----- Existing functions with history integration -----
     function saveToLocalStorage() {
         localStorage.setItem("flowTodo_tasks", JSON.stringify(tasks));
         localStorage.setItem("flowTodo_nextId", nextId);
     }
 
-    // ----- Load from localStorage -----
     function loadFromLocalStorage() {
         const storedTasks = localStorage.getItem("flowTodo_tasks");
         const storedNextId = localStorage.getItem("flowTodo_nextId");
         if (storedTasks) {
             tasks = JSON.parse(storedTasks);
         } else {
-            // demo initial tasks
             tasks = [
                 { id: 1, text: "🌟 Explore dark mode", completed: false },
                 { id: 2, text: "📌 Edit or delete tasks", completed: false },
                 { id: 3, text: "✅ Mark me as completed", completed: true },
                 { id: 4, text: "💾 Tasks survive page reload", completed: false }
             ];
+            // Log initial demo tasks as "added" in history? optional but nice
+            tasks.forEach(t => {
+                pushToHistory("➕ Added", `Task: "${t.text}"`);
+            });
         }
         if (storedNextId) {
             nextId = parseInt(storedNextId);
         } else {
-            // calculate nextId based on existing tasks
             if (tasks.length > 0) {
                 nextId = Math.max(...tasks.map(t => t.id)) + 1;
             } else {
@@ -491,9 +677,7 @@
         }
     }
 
-    // ----- Render UI (based on currentFilter) -----
     function renderTasks() {
-        // filter tasks
         let filteredTasks = tasks;
         if (currentFilter === "active") {
             filteredTasks = tasks.filter(task => !task.completed);
@@ -501,7 +685,6 @@
             filteredTasks = tasks.filter(task => task.completed);
         }
 
-        // clear list
         taskListEl.innerHTML = "";
         if (filteredTasks.length === 0) {
             const emptyLi = document.createElement("li");
@@ -514,7 +697,6 @@
                 li.className = "task-item";
                 li.dataset.id = task.id;
 
-                // checkbox
                 const checkBox = document.createElement("input");
                 checkBox.type = "checkbox";
                 checkBox.className = "task-check";
@@ -524,20 +706,16 @@
                     toggleTaskCompletion(task.id);
                 });
 
-                // task text span
                 const textSpan = document.createElement("span");
                 textSpan.className = `task-text ${task.completed ? "completed" : ""}`;
                 textSpan.innerText = task.text;
-                // click on text toggles completion (nice UX)
                 textSpan.addEventListener("click", () => {
                     toggleTaskCompletion(task.id);
                 });
 
-                // action buttons container
                 const actionsDiv = document.createElement("div");
                 actionsDiv.className = "task-actions";
 
-                // edit button
                 const editBtn = document.createElement("button");
                 editBtn.innerHTML = "✏️";
                 editBtn.className = "icon-btn edit-btn";
@@ -547,7 +725,6 @@
                     enableEditMode(task.id);
                 });
 
-                // delete button
                 const deleteBtn = document.createElement("button");
                 deleteBtn.innerHTML = "🗑️";
                 deleteBtn.className = "icon-btn delete-btn";
@@ -572,25 +749,27 @@
         highlightActiveFilter();
     }
 
-    // toggle complete
     function toggleTaskCompletion(taskId) {
         const task = tasks.find(t => t.id === taskId);
         if (task) {
+            const wasCompleted = task.completed;
             task.completed = !task.completed;
+            const newStatus = task.completed ? "completed" : "active";
+            pushToHistory(`✅ ${newStatus === "completed" ? "Completed" : "Uncompleted"}`, `Task: "${task.text}"`);
             renderTasks();
         }
     }
 
-    // delete single task
     function deleteTaskById(taskId) {
-        tasks = tasks.filter(t => t.id !== taskId);
-        if (editModeId === taskId) {
-            resetEditMode();
+        const taskToDelete = tasks.find(t => t.id === taskId);
+        if (taskToDelete) {
+            pushToHistory("🗑️ Deleted", `Task: "${taskToDelete.text}"`);
         }
+        tasks = tasks.filter(t => t.id !== taskId);
+        if (editModeId === taskId) resetEditMode();
         renderTasks();
     }
 
-    // enable edit mode (fill input)
     function enableEditMode(taskId) {
         const taskToEdit = tasks.find(t => t.id === taskId);
         if (!taskToEdit) return;
@@ -601,7 +780,6 @@
         taskInput.focus();
     }
 
-    // reset edit mode (cancel)
     function resetEditMode() {
         editModeId = null;
         taskInput.value = "";
@@ -609,7 +787,6 @@
         cancelEditBtn.style.display = "none";
     }
 
-    // Add or Update logic
     function handleAddOrUpdate() {
         const rawText = taskInput.value.trim();
         if (rawText === "") {
@@ -618,21 +795,21 @@
         }
 
         if (editModeId !== null) {
-            // UPDATE existing task
             const taskIndex = tasks.findIndex(t => t.id === editModeId);
             if (taskIndex !== -1) {
+                const oldText = tasks[taskIndex].text;
                 tasks[taskIndex].text = rawText;
-                // optional: keep completed state same.
+                if (oldText !== rawText) {
+                    pushToHistory("✏️ Edited", `From: "${oldText}" → To: "${rawText}"`);
+                }
                 resetEditMode();
                 renderTasks();
             } else {
-                // if somehow task gone
                 resetEditMode();
                 alert("Task not found, creating new instead.");
                 createNewTask(rawText);
             }
         } else {
-            // ADD new task
             createNewTask(rawText);
         }
     }
@@ -644,46 +821,46 @@
             completed: false,
         };
         tasks.push(newTask);
+        pushToHistory("➕ Added", `Task: "${taskText}"`);
         nextId++;
         taskInput.value = "";
         renderTasks();
     }
 
-    // update stats (total & pending)
     function updateStats() {
         const total = tasks.length;
         const pending = tasks.filter(t => !t.completed).length;
         taskStatsSpan.innerHTML = `📊 ${total} task${total !== 1 ? 's' : ''} · ${pending} pending`;
     }
 
-    // clear completed tasks
     function clearCompletedTasks() {
-        const hasCompleted = tasks.some(t => t.completed);
-        if (!hasCompleted) {
+        const completedTasks = tasks.filter(t => t.completed);
+        if (completedTasks.length === 0) {
             alert("No completed tasks to clear.");
             return;
         }
         if (confirm("Remove all completed tasks?")) {
+            const taskNames = completedTasks.map(t => `"${t.text}"`).join(", ");
+            pushToHistory("🧹 Cleared completed", `Removed: ${taskNames}`);
             tasks = tasks.filter(t => !t.completed);
             if (editModeId && !tasks.find(t => t.id === editModeId)) resetEditMode();
             renderTasks();
         }
     }
 
-    // delete all tasks (with confirmation)
     function deleteAllTasks() {
         if (tasks.length === 0) {
             alert("No tasks to delete.");
             return;
         }
         if (confirm("⚠️ Delete ALL tasks permanently? This action cannot be undone.")) {
+            pushToHistory("⚠️ Deleted all tasks", `Total ${tasks.length} tasks removed`);
             tasks = [];
             resetEditMode();
             renderTasks();
         }
     }
 
-    // filters logic
     function setFilter(filterValue) {
         currentFilter = filterValue;
         renderTasks();
@@ -700,7 +877,7 @@
         });
     }
 
-    // ----- DARK MODE with localStorage persistence -----
+    // Dark mode
     function initDarkMode() {
         const savedTheme = localStorage.getItem("flowTodo_theme");
         if (savedTheme === "dark") {
@@ -724,15 +901,20 @@
         }
     }
 
-    // ----- Event listeners & initialization -----
+    // Event bindings
     function bindEvents() {
         addUpdateBtn.addEventListener("click", handleAddOrUpdate);
         cancelEditBtn.addEventListener("click", resetEditMode);
         clearCompletedBtn.addEventListener("click", clearCompletedTasks);
         clearAllBtn.addEventListener("click", deleteAllTasks);
         darkModeToggle.addEventListener("click", toggleDarkMode);
+        historyBtn.addEventListener("click", showHistoryModal);
+        closeHistoryModal.addEventListener("click", hideHistoryModal);
+        clearHistoryBtn.addEventListener("click", clearHistory);
+        window.addEventListener("click", (e) => {
+            if (e.target === historyModal) hideHistoryModal();
+        });
 
-        // filter buttons
         filterBtns.forEach(btn => {
             btn.addEventListener("click", (e) => {
                 const filterValue = e.currentTarget.getAttribute("data-filter");
@@ -740,7 +922,6 @@
             });
         });
 
-        // press Enter key on input field
         taskInput.addEventListener("keypress", (e) => {
             if (e.key === "Enter") {
                 e.preventDefault();
@@ -749,12 +930,14 @@
         });
     }
 
-    // initial load
+    // Initial load
     function init() {
+        loadHistoryFromLocalStorage();
         loadFromLocalStorage();
         initDarkMode();
         bindEvents();
         renderTasks();
+        renderHistoryModal();
     }
 
     init();
