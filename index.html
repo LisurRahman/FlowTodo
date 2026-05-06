@@ -1,150 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <link rel="icon" type="image/png" href="Goal Todo.png">
-    <title>Goal Todo with History</title>
+    <title>Daily Goal Todo</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
 
         :root {
-            --bg-gradient-start: #eef2f7;
-            --bg-gradient-end: #d9e2ec;
+            --bg-start: #eef2f7;
+            --bg-end: #d9e2ec;
             --card-bg: #ffffff;
             --text-primary: #1a2c3e;
             --text-secondary: #3e5a6f;
-            --border-light: #e2e8f0;
+            --border: #e2e8f0;
             --accent: #3b82f6;
             --accent-hover: #2563eb;
             --danger: #ef4444;
-            --danger-hover: #dc2626;
-            --success: #10b981;
             --warning: #f59e0b;
-            --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.05), 0 2px 4px rgba(0, 0, 0, 0.02);
-            --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.08);
-            --radius-card: 28px;
-            --radius-element: 18px;
+            --shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+            --radius: 28px;
         }
 
         body.dark-mode {
-            --bg-gradient-start: #0f172a;
-            --bg-gradient-end: #111827;
+            --bg-start: #1e3265;
+            --bg-end: #111827;
             --card-bg: #1e293b;
             --text-primary: #f1f5f9;
             --text-secondary: #cbd5e1;
-            --border-light: #334155;
+            --border: #334155;
             --accent: #60a5fa;
-            --accent-hover: #3b82f6;
-            --shadow-sm: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        body.dark-mode .task-text {
+            color: #ffffff !important;
         }
 
         body {
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
-            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
             min-height: 100vh;
-            padding: 2rem 1.5rem;
+            padding: 2rem 1rem;
             display: flex;
-            align-items: center;
             justify-content: center;
+            align-items: center;
         }
 
-        .todo-card {
-            max-width: 800px;
+        .card {
+            max-width: 750px;
             width: 100%;
-            margin: 0 auto;
             background: var(--card-bg);
-            border-radius: var(--radius-card);
-            box-shadow: var(--shadow-md);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
             overflow: hidden;
-            transition: all 0.3s;
         }
 
-        .todo-header {
-            padding: 1.8rem 2rem 1rem 2rem;
-            border-bottom: 1px solid var(--border-light);
+        /* header */
+        .header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
-            align-items: baseline;
+            align-items: center;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.8rem;
         }
 
-        .title-section h1 {
-            font-size: 1.9rem;
-            font-weight: 700;
+        h1 {
+            font-size: 1.8rem;
             background: linear-gradient(135deg, var(--accent), #8b5cf6);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
-            letter-spacing: -0.3px;
         }
 
-        .title-section p {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            margin-top: 0.2rem;
-        }
-
-        #darkModeToggle {
-            background: var(--border-light);
+        #darkToggle {
+            background: var(--border);
             border: none;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             width: 44px;
             height: 44px;
             border-radius: 60px;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             background-color: var(--card-bg);
-            box-shadow: var(--shadow-sm);
-            transition: 0.2s;
+            box-shadow: var(--shadow);
         }
 
-        #darkModeToggle:hover {
-            transform: scale(0.96);
+        /* timer section */
+        .timer-section {
+            padding: 1rem 2rem;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .timer-panel {
+            background: rgba(59, 130, 246, 0.08);
+            border-radius: 40px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .timer-display {
+            font-family: monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: var(--card-bg);
+            padding: 6px 20px;
+            border-radius: 60px;
+            letter-spacing: 2px;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-timer {
             background: var(--accent);
+            border: none;
             color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
         }
 
+        .btn-timer-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .timer-status {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* input area */
         .input-area {
-            padding: 1.5rem 2rem 0.8rem 2rem;
+            padding: 1.5rem 2rem 0.5rem 2rem;
         }
 
         .input-group {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
-            align-items: center;
         }
 
         #taskInput {
             flex: 1;
-            padding: 14px 20px;
-            font-size: 1rem;
-            border: 1.5px solid var(--border-light);
+            padding: 12px 20px;
+            border: 1.5px solid var(--border);
             background: var(--card-bg);
             color: var(--text-primary);
             border-radius: 60px;
             outline: none;
-            font-weight: 500;
-            transition: 0.2s;
+            font-size: 1rem;
         }
 
         #taskInput:focus {
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 10px;
         }
 
         .btn-primary {
@@ -155,276 +182,173 @@
             border-radius: 60px;
             font-weight: 600;
             cursor: pointer;
-            font-size: 0.95rem;
-            transition: 0.2s;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
         }
 
         .btn-secondary {
             background: transparent;
-            border: 1.5px solid var(--border-light);
+            border: 1px solid var(--border);
             color: var(--text-secondary);
             padding: 12px 20px;
             border-radius: 60px;
-            font-weight: 500;
             cursor: pointer;
         }
 
-        .btn-secondary:hover {
-            background: var(--border-light);
-            color: var(--text-primary);
-        }
-
+        /* stats & filters */
         .stats-filters {
-            padding: 0.5rem 2rem 1rem 2rem;
+            padding: 0.5rem 2rem;
             display: flex;
             justify-content: space-between;
-            align-items: center;
             flex-wrap: wrap;
-            gap: 15px;
-            border-bottom: 1px solid var(--border-light);
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .task-stats {
-            background: var(--border-light);
-            padding: 6px 14px;
+        .stats {
+            background: var(--border);
+            padding: 4px 14px;
             border-radius: 40px;
             font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-primary);
         }
 
         .filter-group {
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .filter-btn {
             background: transparent;
             border: none;
-            padding: 6px 16px;
+            padding: 4px 14px;
             border-radius: 30px;
             cursor: pointer;
-            font-weight: 500;
             color: var(--text-secondary);
-            transition: 0.2s;
         }
 
         .filter-btn.active {
             background: var(--accent);
             color: white;
-            box-shadow: var(--shadow-sm);
         }
 
-        .filter-btn:hover:not(.active) {
-            background: var(--border-light);
-            color: var(--text-primary);
-        }
-
+        /* task list */
         .task-list-container {
-            padding: 0.5rem 2rem 2rem 2rem;
+            padding: 1rem 2rem 2rem 2rem;
         }
 
         .task-list {
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            max-height: 460px;
+            gap: 10px;
+            max-height: 400px;
             overflow-y: auto;
-            padding-right: 6px;
-        }
-
-        .task-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .task-list::-webkit-scrollbar-track {
-            background: var(--border-light);
-            border-radius: 10px;
-        }
-
-        .task-list::-webkit-scrollbar-thumb {
-            background: var(--accent);
-            border-radius: 10px;
         }
 
         .task-item {
             background: var(--card-bg);
-            border: 1px solid var(--border-light);
+            border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 12px 18px;
+            padding: 10px 16px;
             display: flex;
             align-items: center;
-            gap: 14px;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .task-item:hover {
-            transform: translateX(4px);
-            border-color: var(--accent);
+            gap: 12px;
         }
 
         .task-check {
-            width: 22px;
-            height: 22px;
-            cursor: pointer;
+            width: 20px;
+            height: 20px;
             accent-color: var(--accent);
-            transform: scale(1);
         }
 
         .task-text {
             flex: 1;
-            font-size: 1rem;
             font-weight: 500;
-            color: var(--text-primary);
-            word-break: break-word;
             cursor: pointer;
-            transition: 0.1s;
         }
 
         .task-text.completed {
             text-decoration: line-through;
-            color: var(--text-secondary);
-            opacity: 0.7;
-        }
-
-        .task-actions {
-            display: flex;
-            gap: 8px;
+            opacity: 0.6;
         }
 
         .icon-btn {
-            background: transparent;
+            background: none;
             border: none;
             font-size: 1.2rem;
             cursor: pointer;
-            padding: 6px 8px;
-            border-radius: 40px;
-            transition: 0.2s;
+            padding: 5px;
+            border-radius: 30px;
             color: var(--text-secondary);
         }
 
-        .icon-btn.edit-btn:hover {
-            background: var(--warning);
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .icon-btn.delete-btn:hover {
-            background: var(--danger);
-            color: white;
-            transform: scale(1.05);
+        .icon-btn:hover {
+            background: var(--border);
         }
 
         .footer-actions {
-            padding: 0 2rem 1.8rem 2rem;
+            padding: 0.5rem 2rem 1.8rem 2rem;
             display: flex;
             justify-content: space-between;
-            gap: 12px;
             flex-wrap: wrap;
-            border-top: 1px solid var(--border-light);
-            margin-top: 12px;
-            padding-top: 1.5rem;
+            gap: 10px;
+            border-top: 1px solid var(--border);
         }
 
         .clear-btn {
             background: transparent;
             border: 1px solid var(--danger);
             color: var(--danger);
-            padding: 8px 18px;
+            padding: 6px 18px;
             border-radius: 40px;
-            font-weight: 500;
             cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .clear-btn:hover {
-            background: var(--danger);
-            color: white;
-        }
-
-        .clear-all-btn {
-            background: transparent;
-            border: 1px solid var(--border-light);
-            color: var(--text-secondary);
         }
 
         .history-btn {
             border-color: var(--accent);
             color: var(--accent);
         }
-        .history-btn:hover {
-            background: var(--accent);
-            color: white;
-        }
 
-        .empty-message {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        /* Modal styles for history */
-        .modal-overlay {
+        /* modal for daily history */
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(3px);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
             visibility: hidden;
             opacity: 0;
             transition: 0.2s;
+            z-index: 1000;
         }
-        .modal-overlay.active {
+
+        .modal.active {
             visibility: visible;
             opacity: 1;
         }
-        .modal-container {
+
+        .modal-content {
             background: var(--card-bg);
             width: 90%;
             max-width: 600px;
             max-height: 80vh;
             border-radius: 32px;
-            box-shadow: var(--shadow-md);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border: 1px solid var(--border-light);
         }
+
         .modal-header {
             padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border-light);
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .modal-header h3 {
-            font-size: 1.5rem;
-            color: var(--text-primary);
-        }
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            cursor: pointer;
-            color: var(--text-secondary);
-            line-height: 1;
-        }
+
         .history-list {
             flex: 1;
             overflow-y: auto;
@@ -434,513 +358,588 @@
             flex-direction: column;
             gap: 12px;
         }
-        .history-item {
-            background: var(--border-light);
-            padding: 10px 14px;
+
+        .day-record {
+            background: var(--border);
             border-radius: 20px;
-            font-size: 0.9rem;
-            color: var(--text-primary);
-            border-left: 4px solid var(--accent);
+            padding: 12px;
+            border-left: 5px solid var(--accent);
         }
-        .history-time {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-        .history-action {
-            font-weight: 600;
-        }
-        .modal-footer {
-            padding: 1rem;
-            border-top: 1px solid var(--border-light);
+
+        .day-date {
+            font-weight: bold;
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            margin-bottom: 8px;
         }
-        .clear-history-btn {
-            background: transparent;
-            border: 1px solid var(--danger);
-            padding: 6px 16px;
+
+        .day-tasks {
+            font-size: 0.85rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .task-chip {
+            background: var(--card-bg);
+            padding: 2px 10px;
             border-radius: 30px;
-            color: var(--danger);
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 2rem;
+        }
+
+        button {
             cursor: pointer;
         }
 
-        @media (max-width: 580px) {
-            body {
-                padding: 1rem;
+        @media (max-width: 600px) {
+            .timer-display {
+                font-size: 1.4rem;
             }
-            .input-group {
-                flex-direction: column;
-            }
-            .action-buttons {
-                width: 100%;
-            }
-            .btn-primary, .btn-secondary {
-                flex: 1;
-                text-align: center;
-            }
-            .stats-filters {
+
+            .timer-panel {
                 flex-direction: column;
                 align-items: stretch;
-            }
-            .filter-group {
-                justify-content: center;
-            }
-            .task-item {
-                flex-wrap: wrap;
-            }
-            .task-actions {
-                margin-left: auto;
             }
         }
     </style>
 </head>
+
 <body>
-<div class="todo-card">
-    <div class="todo-header">
-        <div class="title-section">
-            <h1>🏆 Goal Todo</h1>
-            <p>stay organized, stay fluid</p>
+    <div class="card">
+        <div class="header">
+            <h1>🏆 Daily Goal Todo</h1>
+            <button id="darkToggle" aria-label="Dark mode">🌙</button>
         </div>
-        <button id="darkModeToggle" aria-label="Dark mode">🌙</button>
+
+        <!-- Timer section -->
+        <div class="timer-section">
+            <div class="timer-panel">
+                <div class="timer-display" id="timerDisplay">24:00:00</div>
+                <div class="timer-controls">
+                    <button id="startTimerBtn" class="btn-timer">▶ Start Day (24h)</button>
+                    <button id="resetTimerBtn" class="btn-timer btn-timer-outline">⟳ Reset Day</button>
+                </div>
+                <div class="timer-status" id="timerStatus">⏸ Timer not started</div>
+            </div>
+        </div>
+
+        <!-- Add task -->
+        <div class="input-area">
+            <div class="input-group">
+                <input type="text" id="taskInput" placeholder="Write a task for this day..." autocomplete="off">
+                <button id="addBtn" class="btn-primary">➕ Add Task</button>
+                <button id="cancelEditBtn" class="btn-secondary" style="display: none;">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Stats & filters -->
+        <div class="stats-filters">
+            <div class="stats" id="taskStats">📋 0 tasks · 0 pending</div>
+            <div class="filter-group">
+                <button data-filter="all" class="filter-btn active">All</button>
+                <button data-filter="active" class="filter-btn">Active</button>
+                <button data-filter="completed" class="filter-btn">Completed</button>
+            </div>
+        </div>
+
+        <!-- Task list -->
+        <div class="task-list-container">
+            <ul class="task-list" id="taskList">
+                <li class="empty-msg">✨ Click "Start Day" and add your tasks</li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer-actions">
+            <button id="historyBtn" class="clear-btn history-btn">📜 Daily History</button>
+            <button id="clearCompletedBtn" class="clear-btn">🗑️ Clear completed</button>
+            <button id="clearAllBtn" class="clear-btn">⚠️ Delete all tasks</button>
+        </div>
     </div>
 
-    <div class="input-area">
-        <div class="input-group">
-            <input type="text" id="taskInput" placeholder="Write a new task... (e.g., 'Finish project')" autocomplete="off">
-            <div class="action-buttons">
-                <button id="addUpdateBtn" class="btn-primary">➕ Add Task</button>
-                <button id="cancelEditBtn" class="btn-secondary" style="display: none;">✖ Cancel</button>
+    <!-- History Modal -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📆 Past Days (24h sessions)</h3>
+                <button id="closeModalBtn" style="font-size:1.8rem; background:none; border:none;">&times;</button>
+            </div>
+            <ul id="historyList" class="history-list">
+                <li class="empty-msg">No days recorded yet.</li>
+            </ul>
+            <div style="padding:1rem; border-top:1px solid var(--border); display:flex; justify-content:flex-end;">
+                <button id="clearHistoryBtn" class="clear-btn" style="border-color:var(--danger);">Clear all
+                    history</button>
             </div>
         </div>
     </div>
 
-    <div class="stats-filters">
-        <div class="task-stats" id="taskStats">📋 0 tasks · 0 pending</div>
-        <div class="filter-group">
-            <button data-filter="all" class="filter-btn active">All</button>
-            <button data-filter="active" class="filter-btn">Active</button>
-            <button data-filter="completed" class="filter-btn">Completed</button>
-        </div>
-    </div>
+    <script>
+        // ---------- GLOBAL STATE ----------
+        let tasks = [];           // { id, text, completed }
+        let currentFilter = "all";
+        let editModeId = null;
+        let nextId = 1;
 
-    <div class="task-list-container">
-        <ul class="task-list" id="taskList">
-            <li class="empty-message">✨ Your tasks will appear here. Add your first task!</li>
-        </ul>
-    </div>
+        // Timer state
+        let timerActive = false;      // whether timer is running
+        let timeLeftSeconds = 24 * 3600;  // 24 hours in seconds
+        let timerInterval = null;
+        let currentDayStartTime = null;   // timestamp when day started
 
-    <div class="footer-actions">
-        <button id="historyBtn" class="clear-btn history-btn">📜 History</button>
-        <button id="clearCompletedBtn" class="clear-btn">🗑️ Clear completed</button>
-        <button id="clearAllBtn" class="clear-btn clear-all-btn">⚠️ Delete all tasks</button>
-    </div>
-</div>
+        // History: store completed 24h sessions (snapshots of tasks)
+        let dayHistory = [];   // each: { startDateISO, endDateISO, tasks: [{text, completed}] }
 
-<!-- History Modal -->
-<div id="historyModal" class="modal-overlay">
-    <div class="modal-container">
-        <div class="modal-header">
-            <h3>📜 Task History</h3>
-            <button class="modal-close" id="closeHistoryModal">&times;</button>
-        </div>
-        <ul id="historyList" class="history-list">
-            <li class="empty-message">No history yet.</li>
-        </ul>
-        <div class="modal-footer">
-            <button id="clearHistoryBtn" class="clear-history-btn">Clear all history</button>
-        </div>
-    </div>
-</div>
+        // DOM elements
+        const taskInput = document.getElementById("taskInput");
+        const addBtn = document.getElementById("addBtn");
+        const cancelEditBtn = document.getElementById("cancelEditBtn");
+        const taskListEl = document.getElementById("taskList");
+        const taskStatsSpan = document.getElementById("taskStats");
+        const filterBtns = document.querySelectorAll(".filter-btn");
+        const clearCompletedBtn = document.getElementById("clearCompletedBtn");
+        const clearAllBtn = document.getElementById("clearAllBtn");
+        const darkToggle = document.getElementById("darkToggle");
+        const historyBtn = document.getElementById("historyBtn");
+        const historyModal = document.getElementById("historyModal");
+        const closeModalBtn = document.getElementById("closeModalBtn");
+        const historyListEl = document.getElementById("historyList");
+        const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+        const timerDisplay = document.getElementById("timerDisplay");
+        const startTimerBtn = document.getElementById("startTimerBtn");
+        const resetTimerBtn = document.getElementById("resetTimerBtn");
+        const timerStatusSpan = document.getElementById("timerStatus");
 
-<script>
-    // ----- STORAGE & GLOBAL STATE -----
-    let tasks = [];          // each task: { id, text, completed }
-    let currentFilter = "all";
-    let editModeId = null;
-    let nextId = 1;
-    let history = [];        // array of history entries
-
-    // DOM elements
-    const taskInput = document.getElementById("taskInput");
-    const addUpdateBtn = document.getElementById("addUpdateBtn");
-    const cancelEditBtn = document.getElementById("cancelEditBtn");
-    const taskListEl = document.getElementById("taskList");
-    const taskStatsSpan = document.getElementById("taskStats");
-    const filterBtns = document.querySelectorAll(".filter-btn");
-    const clearCompletedBtn = document.getElementById("clearCompletedBtn");
-    const clearAllBtn = document.getElementById("clearAllBtn");
-    const darkModeToggle = document.getElementById("darkModeToggle");
-    const historyBtn = document.getElementById("historyBtn");
-    const historyModal = document.getElementById("historyModal");
-    const closeHistoryModal = document.getElementById("closeHistoryModal");
-    const historyListEl = document.getElementById("historyList");
-    const clearHistoryBtn = document.getElementById("clearHistoryBtn");
-
-    // ----- History Helpers -----
-    function saveHistoryToLocalStorage() {
-        localStorage.setItem("flowTodo_history", JSON.stringify(history.slice(-150))); // keep last 150
-    }
-
-    function loadHistoryFromLocalStorage() {
-        const storedHistory = localStorage.getItem("flowTodo_history");
-        if (storedHistory) {
-            history = JSON.parse(storedHistory);
-        } else {
-            history = [];
+        // ---------- Helper functions ----------
+        function formatTime(seconds) {
+            if (seconds < 0) seconds = 0;
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
-    }
 
-    function pushToHistory(action, details) {
-        const entry = {
-            id: Date.now() + Math.random(),
-            timestamp: new Date().toLocaleString(),
-            action: action,
-            details: details
-        };
-        history.unshift(entry); // newest first
-        if (history.length > 150) history.pop();
-        saveHistoryToLocalStorage();
-        renderHistoryModal();   // update modal if open
-    }
-
-    // render history inside modal
-    function renderHistoryModal() {
-        if (!historyListEl) return;
-        historyListEl.innerHTML = "";
-        if (history.length === 0) {
-            const emptyLi = document.createElement("li");
-            emptyLi.className = "empty-message";
-            emptyLi.innerText = "No actions recorded yet.";
-            historyListEl.appendChild(emptyLi);
-            return;
-        }
-        history.forEach(entry => {
-            const li = document.createElement("li");
-            li.className = "history-item";
-            li.innerHTML = `
-                <div class="history-time">${entry.timestamp}</div>
-                <div class="history-action">${entry.action}</div>
-                <div>${entry.details}</div>
-            `;
-            historyListEl.appendChild(li);
-        });
-    }
-
-    // Show/hide modal
-    function showHistoryModal() {
-        renderHistoryModal();
-        historyModal.classList.add("active");
-    }
-    function hideHistoryModal() {
-        historyModal.classList.remove("active");
-    }
-    function clearHistory() {
-        if (confirm("Delete all history entries? This won't affect your tasks.")) {
-            history = [];
-            saveHistoryToLocalStorage();
-            renderHistoryModal();
-        }
-    }
-
-    // ----- Existing functions with history integration -----
-    function saveToLocalStorage() {
-        localStorage.setItem("flowTodo_tasks", JSON.stringify(tasks));
-        localStorage.setItem("flowTodo_nextId", nextId);
-    }
-
-    function loadFromLocalStorage() {
-        const storedTasks = localStorage.getItem("flowTodo_tasks");
-        const storedNextId = localStorage.getItem("flowTodo_nextId");
-        if (storedTasks) {
-            tasks = JSON.parse(storedTasks);
-        } else {
-            tasks = [
-                { id: 1, text: "🌟 Explore dark mode", completed: false },
-                { id: 2, text: "📌 Edit or delete tasks", completed: false },
-                { id: 3, text: "✅ Mark me as completed", completed: true },
-                { id: 4, text: "💾 Tasks survive page reload", completed: false }
-            ];
-            // Log initial demo tasks as "added" in history? optional but nice
-            tasks.forEach(t => {
-                pushToHistory("➕ Added", `Task: "${t.text}"`);
-            });
-        }
-        if (storedNextId) {
-            nextId = parseInt(storedNextId);
-        } else {
-            if (tasks.length > 0) {
-                nextId = Math.max(...tasks.map(t => t.id)) + 1;
-            } else {
-                nextId = 1;
+        function updateTimerDisplay() {
+            timerDisplay.innerText = formatTime(timeLeftSeconds);
+            if (timeLeftSeconds <= 0 && timerActive) {
+                // timer finished
+                finishCurrentDay();
             }
         }
-    }
 
-    function renderTasks() {
-        let filteredTasks = tasks;
-        if (currentFilter === "active") {
-            filteredTasks = tasks.filter(task => !task.completed);
-        } else if (currentFilter === "completed") {
-            filteredTasks = tasks.filter(task => task.completed);
+        // called when timer reaches zero
+        function finishCurrentDay() {
+            if (!timerActive) return;
+            stopTimer();
+            timerActive = false;
+            timerStatusSpan.innerText = "✅ Day finished! Start a new day.";
+            timerDisplay.innerText = "00:00:00";
+            // save snapshot of CURRENT tasks to history
+            if (tasks.length > 0) {
+                saveDaySnapshot();
+            }
+            // optional: clear tasks? No, user might want to review. But typical: after a day ends, new day starts fresh?
+            // According to user: "after this timer i can add next next task after this timer (it's a day)" – they might want to reset tasks for new day.
+            // I'll provide an option: when day finishes, tasks remain but NEW timer start will ask to keep or reset? Better to auto reset tasks
+            // but user expects new day = fresh slate? Let's ask: But I'll implement: when day finishes or user clicks "Reset Day", clear tasks.
+            // We'll do: finishCurrentDay also clears tasks? To keep clean, I'll add alert and clear tasks automatically after saving snapshot.
+            if (tasks.length > 0) {
+                if (confirm("Day finished! Save today's tasks to history. Start a fresh day?")) {
+                    tasks = [];
+                    nextId = 1;
+                    editModeId = null;
+                    renderTasks();
+                    saveTasksToLocal();
+                }
+            }
+            // also reset timer variables
+            timeLeftSeconds = 24 * 3600;
+            updateTimerDisplay();
+            saveTimerState();
         }
 
-        taskListEl.innerHTML = "";
-        if (filteredTasks.length === 0) {
-            const emptyLi = document.createElement("li");
-            emptyLi.className = "empty-message";
-            emptyLi.innerText = currentFilter === "all" ? "🌱 No tasks yet. Add something!" : (currentFilter === "active" ? "🎉 All tasks are completed! Switch to 'All'." : "✨ No completed tasks here.");
-            taskListEl.appendChild(emptyLi);
-        } else {
-            filteredTasks.forEach(task => {
-                const li = document.createElement("li");
-                li.className = "task-item";
-                li.dataset.id = task.id;
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
 
-                const checkBox = document.createElement("input");
-                checkBox.type = "checkbox";
-                checkBox.className = "task-check";
-                checkBox.checked = task.completed;
-                checkBox.addEventListener("change", (e) => {
-                    e.stopPropagation();
-                    toggleTaskCompletion(task.id);
-                });
-
-                const textSpan = document.createElement("span");
-                textSpan.className = `task-text ${task.completed ? "completed" : ""}`;
-                textSpan.innerText = task.text;
-                textSpan.addEventListener("click", () => {
-                    toggleTaskCompletion(task.id);
-                });
-
-                const actionsDiv = document.createElement("div");
-                actionsDiv.className = "task-actions";
-
-                const editBtn = document.createElement("button");
-                editBtn.innerHTML = "✏️";
-                editBtn.className = "icon-btn edit-btn";
-                editBtn.title = "Edit task";
-                editBtn.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    enableEditMode(task.id);
-                });
-
-                const deleteBtn = document.createElement("button");
-                deleteBtn.innerHTML = "🗑️";
-                deleteBtn.className = "icon-btn delete-btn";
-                deleteBtn.title = "Delete task";
-                deleteBtn.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    if (confirm(`Delete "${task.text}"?`)) {
-                        deleteTaskById(task.id);
+        function startTimer() {
+            if (timerActive) {
+                alert("Timer already running!");
+                return;
+            }
+            if (timeLeftSeconds <= 0) {
+                // reset to 24h before starting
+                timeLeftSeconds = 24 * 3600;
+            }
+            timerActive = true;
+            currentDayStartTime = Date.now();
+            timerStatusSpan.innerText = "⏳ Day in progress...";
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (timerActive && timeLeftSeconds > 0) {
+                    timeLeftSeconds--;
+                    updateTimerDisplay();
+                    saveTimerState();
+                    if (timeLeftSeconds === 0) {
+                        finishCurrentDay();
                     }
-                });
-
-                actionsDiv.appendChild(editBtn);
-                actionsDiv.appendChild(deleteBtn);
-                li.appendChild(checkBox);
-                li.appendChild(textSpan);
-                li.appendChild(actionsDiv);
-                taskListEl.appendChild(li);
-            });
+                }
+            }, 1000);
+            saveTimerState();
+            updateTimerDisplay();
         }
-        updateStats();
-        saveToLocalStorage();
-        highlightActiveFilter();
-    }
 
-    function toggleTaskCompletion(taskId) {
-        const task = tasks.find(t => t.id === taskId);
-        if (task) {
-            const wasCompleted = task.completed;
-            task.completed = !task.completed;
-            const newStatus = task.completed ? "completed" : "active";
-            pushToHistory(`✅ ${newStatus === "completed" ? "Completed" : "Uncompleted"}`, `Task: "${task.text}"`);
+        function resetDay() {
+            if (timerActive) {
+                if (confirm("Stop current day and reset timer? Current tasks will be cleared.")) {
+                    stopTimer();
+                    timerActive = false;
+                    timeLeftSeconds = 24 * 3600;
+                    updateTimerDisplay();
+                    timerStatusSpan.innerText = "⏸ Timer reset. Click Start Day.";
+                    // clear all tasks for new day
+                    tasks = [];
+                    nextId = 1;
+                    editModeId = null;
+                    renderTasks();
+                    saveTasksToLocal();
+                    saveTimerState();
+                }
+            } else {
+                // just reset timer display without affecting tasks
+                timeLeftSeconds = 24 * 3600;
+                updateTimerDisplay();
+                timerStatusSpan.innerText = "⏸ Timer reset (not started)";
+                saveTimerState();
+            }
+        }
+
+        function saveDaySnapshot() {
+            if (tasks.length === 0) return;
+            const snapshotTasks = tasks.map(t => ({ text: t.text, completed: t.completed }));
+            const record = {
+                startDate: currentDayStartTime ? new Date(currentDayStartTime).toLocaleString() : "manual start",
+                endDate: new Date().toLocaleString(),
+                dateLabel: new Date().toLocaleDateString(),
+                tasks: snapshotTasks,
+                total: snapshotTasks.length,
+                completed: snapshotTasks.filter(t => t.completed).length
+            };
+            dayHistory.unshift(record); // newest first
+            if (dayHistory.length > 50) dayHistory.pop();
+            saveHistoryToLocal();
+            renderHistoryModalContent();
+        }
+
+        // manual snapshot (in case user wants to finish early)
+        function finishDayEarly() {
+            if (!timerActive && timeLeftSeconds === 24 * 3600) {
+                alert("Timer not started. Start a day first.");
+                return;
+            }
+            if (timeLeftSeconds > 0 && timerActive) {
+                if (confirm("Finish day early? Current tasks will be saved to history and timer will stop.")) {
+                    stopTimer();
+                    timerActive = false;
+                    timerStatusSpan.innerText = "Day finished early.";
+                    timeLeftSeconds = 0;
+                    updateTimerDisplay();
+                    if (tasks.length > 0) saveDaySnapshot();
+                    // clear tasks
+                    tasks = [];
+                    nextId = 1;
+                    renderTasks();
+                    saveTasksToLocal();
+                    timeLeftSeconds = 24 * 3600; // reset for next start
+                    updateTimerDisplay();
+                    timerStatusSpan.innerText = "⏸ Ready for new day. Click Start Day.";
+                }
+            } else {
+                alert("No active timer.");
+            }
+        }
+
+        // ----- Task management (similar to original) -----
+        function renderTasks() {
+            let filtered = tasks;
+            if (currentFilter === "active") filtered = tasks.filter(t => !t.completed);
+            if (currentFilter === "completed") filtered = tasks.filter(t => t.completed);
+            taskListEl.innerHTML = "";
+            if (filtered.length === 0) {
+                const empty = document.createElement("li");
+                empty.className = "empty-msg";
+                empty.innerText = currentFilter === "all" ? "✨ No tasks. Add something for today!" : "No tasks in this category.";
+                taskListEl.appendChild(empty);
+            } else {
+                filtered.forEach(task => {
+                    const li = document.createElement("li");
+                    li.className = "task-item";
+                    const chk = document.createElement("input");
+                    chk.type = "checkbox";
+                    chk.className = "task-check";
+                    chk.checked = task.completed;
+                    chk.onchange = () => toggleComplete(task.id);
+                    const span = document.createElement("span");
+                    span.className = `task-text ${task.completed ? "completed" : ""}`;
+                    span.innerText = task.text;
+                    span.onclick = () => toggleComplete(task.id);
+                    const actions = document.createElement("div");
+                    const editBtn = document.createElement("button");
+                    editBtn.innerHTML = "✏️";
+                    editBtn.className = "icon-btn";
+                    editBtn.onclick = (e) => { e.stopPropagation(); enableEdit(task.id); };
+                    const delBtn = document.createElement("button");
+                    delBtn.innerHTML = "🗑️";
+                    delBtn.className = "icon-btn";
+                    delBtn.onclick = (e) => { e.stopPropagation(); if (confirm("Delete?")) deleteTask(task.id); };
+                    actions.appendChild(editBtn);
+                    actions.appendChild(delBtn);
+                    li.appendChild(chk);
+                    li.appendChild(span);
+                    li.appendChild(actions);
+                    taskListEl.appendChild(li);
+                });
+            }
+            updateStats();
+            saveTasksToLocal();
+            highlightFilter();
+        }
+
+        function toggleComplete(id) {
+            const t = tasks.find(t => t.id === id);
+            if (t) { t.completed = !t.completed; renderTasks(); }
+        }
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            if (editModeId === id) resetEdit();
             renderTasks();
         }
-    }
-
-    function deleteTaskById(taskId) {
-        const taskToDelete = tasks.find(t => t.id === taskId);
-        if (taskToDelete) {
-            pushToHistory("🗑️ Deleted", `Task: "${taskToDelete.text}"`);
+        function enableEdit(id) {
+            const t = tasks.find(t => t.id === id);
+            if (!t) return;
+            editModeId = id;
+            taskInput.value = t.text;
+            addBtn.innerText = "✏️ Update";
+            cancelEditBtn.style.display = "inline-flex";
+            taskInput.focus();
         }
-        tasks = tasks.filter(t => t.id !== taskId);
-        if (editModeId === taskId) resetEditMode();
-        renderTasks();
-    }
-
-    function enableEditMode(taskId) {
-        const taskToEdit = tasks.find(t => t.id === taskId);
-        if (!taskToEdit) return;
-        editModeId = taskId;
-        taskInput.value = taskToEdit.text;
-        addUpdateBtn.innerHTML = "✏️ Update Task";
-        cancelEditBtn.style.display = "inline-flex";
-        taskInput.focus();
-    }
-
-    function resetEditMode() {
-        editModeId = null;
-        taskInput.value = "";
-        addUpdateBtn.innerHTML = "➕ Add Task";
-        cancelEditBtn.style.display = "none";
-    }
-
-    function handleAddOrUpdate() {
-        const rawText = taskInput.value.trim();
-        if (rawText === "") {
-            alert("Please write a task before adding!");
-            return;
+        function resetEdit() {
+            editModeId = null;
+            taskInput.value = "";
+            addBtn.innerText = "➕ Add Task";
+            cancelEditBtn.style.display = "none";
         }
-
-        if (editModeId !== null) {
-            const taskIndex = tasks.findIndex(t => t.id === editModeId);
-            if (taskIndex !== -1) {
-                const oldText = tasks[taskIndex].text;
-                tasks[taskIndex].text = rawText;
-                if (oldText !== rawText) {
-                    pushToHistory("✏️ Edited", `From: "${oldText}" → To: "${rawText}"`);
-                }
-                resetEditMode();
+        function handleAddOrUpdate() {
+            const text = taskInput.value.trim();
+            if (!text) { alert("Write a task."); return; }
+            if (editModeId !== null) {
+                const index = tasks.findIndex(t => t.id === editModeId);
+                if (index !== -1) tasks[index].text = text;
+                resetEdit();
                 renderTasks();
             } else {
-                resetEditMode();
-                alert("Task not found, creating new instead.");
-                createNewTask(rawText);
+                const newTask = { id: nextId++, text, completed: false };
+                tasks.push(newTask);
+                taskInput.value = "";
+                renderTasks();
             }
-        } else {
-            createNewTask(rawText);
         }
-    }
-
-    function createNewTask(taskText) {
-        const newTask = {
-            id: nextId,
-            text: taskText,
-            completed: false,
-        };
-        tasks.push(newTask);
-        pushToHistory("➕ Added", `Task: "${taskText}"`);
-        nextId++;
-        taskInput.value = "";
-        renderTasks();
-    }
-
-    function updateStats() {
-        const total = tasks.length;
-        const pending = tasks.filter(t => !t.completed).length;
-        taskStatsSpan.innerHTML = `📊 ${total} task${total !== 1 ? 's' : ''} · ${pending} pending`;
-    }
-
-    function clearCompletedTasks() {
-        const completedTasks = tasks.filter(t => t.completed);
-        if (completedTasks.length === 0) {
-            alert("No completed tasks to clear.");
-            return;
+        function clearCompleted() {
+            if (!tasks.some(t => t.completed)) { alert("No completed tasks."); return; }
+            if (confirm("Remove completed tasks?")) {
+                tasks = tasks.filter(t => !t.completed);
+                if (editModeId && !tasks.find(t => t.id === editModeId)) resetEdit();
+                renderTasks();
+            }
         }
-        if (confirm("Remove all completed tasks?")) {
-            const taskNames = completedTasks.map(t => `"${t.text}"`).join(", ");
-            pushToHistory("🧹 Cleared completed", `Removed: ${taskNames}`);
-            tasks = tasks.filter(t => !t.completed);
-            if (editModeId && !tasks.find(t => t.id === editModeId)) resetEditMode();
+        function deleteAll() {
+            if (tasks.length === 0) return;
+            if (confirm("Delete ALL tasks? This cannot be undone.")) {
+                tasks = [];
+                resetEdit();
+                renderTasks();
+            }
+        }
+        function updateStats() {
+            const total = tasks.length;
+            const pending = tasks.filter(t => !t.completed).length;
+            taskStatsSpan.innerText = `📊 ${total} task${total !== 1 ? 's' : ''} · ${pending} pending`;
+        }
+        function setFilter(f) {
+            currentFilter = f;
             renderTasks();
         }
-    }
-
-    function deleteAllTasks() {
-        if (tasks.length === 0) {
-            alert("No tasks to delete.");
-            return;
-        }
-        if (confirm("⚠️ Delete ALL tasks permanently? This action cannot be undone.")) {
-            pushToHistory("⚠️ Deleted all tasks", `Total ${tasks.length} tasks removed`);
-            tasks = [];
-            resetEditMode();
-            renderTasks();
-        }
-    }
-
-    function setFilter(filterValue) {
-        currentFilter = filterValue;
-        renderTasks();
-    }
-
-    function highlightActiveFilter() {
-        filterBtns.forEach(btn => {
-            const filterVal = btn.getAttribute("data-filter");
-            if (filterVal === currentFilter) {
-                btn.classList.add("active");
-            } else {
-                btn.classList.remove("active");
-            }
-        });
-    }
-
-    // Dark mode
-    function initDarkMode() {
-        const savedTheme = localStorage.getItem("flowTodo_theme");
-        if (savedTheme === "dark") {
-            document.body.classList.add("dark-mode");
-            darkModeToggle.innerHTML = "☀️";
-        } else {
-            document.body.classList.remove("dark-mode");
-            darkModeToggle.innerHTML = "🌙";
-        }
-    }
-
-    function toggleDarkMode() {
-        if (document.body.classList.contains("dark-mode")) {
-            document.body.classList.remove("dark-mode");
-            localStorage.setItem("flowTodo_theme", "light");
-            darkModeToggle.innerHTML = "🌙";
-        } else {
-            document.body.classList.add("dark-mode");
-            localStorage.setItem("flowTodo_theme", "dark");
-            darkModeToggle.innerHTML = "☀️";
-        }
-    }
-
-    // Event bindings
-    function bindEvents() {
-        addUpdateBtn.addEventListener("click", handleAddOrUpdate);
-        cancelEditBtn.addEventListener("click", resetEditMode);
-        clearCompletedBtn.addEventListener("click", clearCompletedTasks);
-        clearAllBtn.addEventListener("click", deleteAllTasks);
-        darkModeToggle.addEventListener("click", toggleDarkMode);
-        historyBtn.addEventListener("click", showHistoryModal);
-        closeHistoryModal.addEventListener("click", hideHistoryModal);
-        clearHistoryBtn.addEventListener("click", clearHistory);
-        window.addEventListener("click", (e) => {
-            if (e.target === historyModal) hideHistoryModal();
-        });
-
-        filterBtns.forEach(btn => {
-            btn.addEventListener("click", (e) => {
-                const filterValue = e.currentTarget.getAttribute("data-filter");
-                setFilter(filterValue);
+        function highlightFilter() {
+            filterBtns.forEach(btn => {
+                if (btn.dataset.filter === currentFilter) btn.classList.add("active");
+                else btn.classList.remove("active");
             });
-        });
+        }
 
-        taskInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                handleAddOrUpdate();
+        // save/load tasks
+        function saveTasksToLocal() {
+            localStorage.setItem("dailyTodo_tasks", JSON.stringify(tasks));
+            localStorage.setItem("dailyTodo_nextId", nextId);
+        }
+        function loadTasks() {
+            const saved = localStorage.getItem("dailyTodo_tasks");
+            if (saved) tasks = JSON.parse(saved);
+            const savedId = localStorage.getItem("dailyTodo_nextId");
+            if (savedId) nextId = parseInt(savedId);
+            else nextId = tasks.length ? Math.max(...tasks.map(t => t.id), 0) + 1 : 1;
+        }
+
+        // history storage
+        function saveHistoryToLocal() {
+            localStorage.setItem("dailyTodo_history", JSON.stringify(dayHistory));
+        }
+        function loadHistory() {
+            const saved = localStorage.getItem("dailyTodo_history");
+            if (saved) dayHistory = JSON.parse(saved);
+            else dayHistory = [];
+        }
+        function renderHistoryModalContent() {
+            historyListEl.innerHTML = "";
+            if (dayHistory.length === 0) {
+                historyListEl.innerHTML = '<li class="empty-msg">No completed days yet. Start a timer and finish a day.</li>';
+                return;
             }
-        });
-    }
+            dayHistory.forEach(day => {
+                const li = document.createElement("li");
+                li.className = "day-record";
+                const totalTasks = day.tasks.length;
+                const done = day.completed;
+                li.innerHTML = `
+                <div class="day-date">
+                    <span>📅 ${day.dateLabel || day.startDate}</span>
+                    <span>✅ ${day.completed}/${totalTasks}</span>
+                </div>
+                <div class="day-tasks">
+                    ${day.tasks.map(t => `<span class="task-chip" style="text-decoration:${t.completed ? 'line-through' : 'none'}">${escapeHtml(t.text)}</span>`).join('')}
+                </div>
+            `;
+                historyListEl.appendChild(li);
+            });
+        }
+        function escapeHtml(s) {
+            return s.replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+        function clearAllHistory() {
+            if (confirm("Delete all daily history permanently?")) {
+                dayHistory = [];
+                saveHistoryToLocal();
+                renderHistoryModalContent();
+            }
+        }
 
-    // Initial load
-    function init() {
-        loadHistoryFromLocalStorage();
-        loadFromLocalStorage();
-        initDarkMode();
-        bindEvents();
-        renderTasks();
-        renderHistoryModal();
-    }
+        // timer state persistence
+        function saveTimerState() {
+            localStorage.setItem("dailyTodo_timerActive", timerActive);
+            localStorage.setItem("dailyTodo_timeLeft", timeLeftSeconds);
+            if (currentDayStartTime) localStorage.setItem("dailyTodo_startTime", currentDayStartTime);
+        }
+        function loadTimerState() {
+            const active = localStorage.getItem("dailyTodo_timerActive");
+            const savedTime = localStorage.getItem("dailyTodo_timeLeft");
+            const savedStart = localStorage.getItem("dailyTodo_startTime");
+            if (savedTime !== null) timeLeftSeconds = parseInt(savedTime);
+            else timeLeftSeconds = 24 * 3600;
+            if (active === "true") {
+                // restart timer only if time left > 0
+                if (timeLeftSeconds > 0) {
+                    timerActive = true;
+                    if (savedStart) currentDayStartTime = parseInt(savedStart);
+                    timerStatusSpan.innerText = "⏳ Day in progress...";
+                    startTimer(); // this will set interval but avoid duplicate
+                } else {
+                    timerActive = false;
+                    timerStatusSpan.innerText = "Day finished.";
+                }
+            } else {
+                timerActive = false;
+                timerStatusSpan.innerText = "⏸ Timer not started";
+            }
+            updateTimerDisplay();
+        }
+        function stopAndClearTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerActive = false;
+            timerInterval = null;
+        }
 
-    init();
-</script>
+        // dark mode
+        function initDark() {
+            const saved = localStorage.getItem("dailyTodo_theme");
+            if (saved === "dark") {
+                document.body.classList.add("dark-mode");
+                darkToggle.innerHTML = "☀️";
+            } else {
+                darkToggle.innerHTML = "🌙";
+            }
+        }
+        function toggleDark() {
+            document.body.classList.toggle("dark-mode");
+            const isDark = document.body.classList.contains("dark-mode");
+            localStorage.setItem("dailyTodo_theme", isDark ? "dark" : "light");
+            darkToggle.innerHTML = isDark ? "☀️" : "🌙";
+        }
+
+        // event binding
+        function bindEvents() {
+            addBtn.onclick = handleAddOrUpdate;
+            cancelEditBtn.onclick = resetEdit;
+            clearCompletedBtn.onclick = clearCompleted;
+            clearAllBtn.onclick = deleteAll;
+            darkToggle.onclick = toggleDark;
+            historyBtn.onclick = () => { renderHistoryModalContent(); historyModal.classList.add("active"); };
+            closeModalBtn.onclick = () => historyModal.classList.remove("active");
+            clearHistoryBtn.onclick = clearAllHistory;
+            window.onclick = (e) => { if (e.target === historyModal) historyModal.classList.remove("active"); };
+            startTimerBtn.onclick = startTimer;
+            resetTimerBtn.onclick = resetDay;
+            filterBtns.forEach(btn => {
+                btn.onclick = () => setFilter(btn.dataset.filter);
+            });
+            taskInput.addEventListener("keypress", (e) => { if (e.key === "Enter") handleAddOrUpdate(); });
+        }
+
+        function init() {
+            loadTasks();
+            loadHistory();
+            initDark();
+            bindEvents();
+            renderTasks();
+            loadTimerState();
+            // if timer active, start interval (it might have been restored)
+            if (timerActive && timeLeftSeconds > 0) {
+                // startTimer will set interval, but avoid duplicate intervals
+                if (timerInterval) clearInterval(timerInterval);
+                timerInterval = setInterval(() => {
+                    if (timerActive && timeLeftSeconds > 0) {
+                        timeLeftSeconds--;
+                        updateTimerDisplay();
+                        saveTimerState();
+                        if (timeLeftSeconds === 0) finishCurrentDay();
+                    }
+                }, 1000);
+            }
+            updateTimerDisplay();
+        }
+        init();
+    </script>
 </body>
+
 </html>
